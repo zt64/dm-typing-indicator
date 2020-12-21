@@ -1,0 +1,11 @@
+.typing-indicator {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  white-space: normal;
+  width: 64px;
+  word-wrap: normal;
+  display: inline-block;
+  color: var(--text-muted);
+}
