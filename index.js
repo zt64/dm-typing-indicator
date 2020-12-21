@@ -2,7 +2,6 @@ const { Plugin } = require('powercord/entities');
 const { React, getModule } = require('powercord/webpack');
 const { inject, uninject } = require('powercord/injector');
 const { forceUpdateElement } = require('powercord/util');
-const { Spinner } = require('powercord/components');
 
 const Typing = require('./components/Typing')
 const Settings = require('./components/Settings')
@@ -29,7 +28,7 @@ module.exports = class DMTypingIndicator extends Plugin {
     this.loadStylesheet('style.css');
     this.injectPlugin();
 
-    setInterval(() => forceUpdateElement(`.${this.classes.tutorialContainer}`), 1000)
+    this.interval = setInterval(() => forceUpdateElement(`.${this.classes.tutorialContainer}`), 100)
   }
 
   injectPlugin() {
@@ -71,5 +70,6 @@ module.exports = class DMTypingIndicator extends Plugin {
 
   pluginWillUnload () {
     uninject('dm-typing');
+    clearInterval(this.interval)
   }
 };
