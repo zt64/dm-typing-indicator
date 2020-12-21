@@ -70,6 +70,7 @@ module.exports = class DMTypingIndicator extends Plugin {
 
   pluginWillUnload () {
     uninject('dm-typing');
+    powercord.api.settings.unregisterSettings('dm-typing-indicator')
     clearInterval(this.interval)
   }
 };
