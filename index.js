@@ -3,7 +3,7 @@ const { React, getModule } = require('powercord/webpack');
 const { inject, uninject } = require('powercord/injector');
 const { forceUpdateElement } = require('powercord/util');
 
-const Typing = require('./components/Typing')
+const TypingIndicator = require('./components/TypingIndicator')
 const Settings = require('./components/Settings')
 
 module.exports = class DMTypingIndicator extends Plugin {
@@ -11,66 +11,38 @@ module.exports = class DMTypingIndicator extends Plugin {
     super();
 
     this.classes = {
-      ...getModule([ 'guildSeparator', 'listItem' ], false),
       tutorialContainer: (getModule([ 'homeIcon', 'downloadProgress' ], false)).tutorialContainer
     };
   }
 
-  startPlugin () {
+  async startPlugin () {
     powercord.api.settings.registerSettings('dm-typing-indicator', {
       category: this.entityID,
       label: 'DM Typing Indicator',
       render: Settings
     });
 
-    this.ConnectedTyping = this.settings.connectStore(Typing);
+    this.ConnectedTypingIndicator = this.settings.connectStore(TypingIndicator);
 
     this.loadStylesheet('style.css');
     this.injectPlugin();
-
-    this.interval = setInterval(() => forceUpdateElement(`.${this.classes.tutorialContainer}`), 100)
   }
 
   injectPlugin() {
     const { DefaultHomeButton } = getModule([ 'DefaultHomeButton' ], false);
 
     inject('dm-typing', DefaultHomeButton.prototype, 'render', (args, res) => {
-      const users = this.getTypingUsers();
-      
-      if (!users.length) return res;
-
       res.props.children = [ res.props.children ];
-      res.props.children.push(React.createElement(this.ConnectedTyping, { users }));
+      res.props.children.push(React.createElement(this.ConnectedTypingIndicator));
 
       return res;
     });
   }
 
-  // Creates an array of users that are typing in DMs at time of execution
-  getTypingUsers() {
-    const { getCurrentUser, getUser } = getModule([ 'getCurrentUser' ], false);
-    const { getTypingUsers } = getModule([ 'getTypingUsers' ], false);
-
-    const channels = getModule([ 'getPrivateChannels' ], false).getPrivateChannels();
-
-    let users = [];
-
-    for (const channelID in channels) {
-      const typing = getTypingUsers(channelID);
-
-      if (Object.keys(typing).length !== 0) {
-        const userID = Object.keys(typing)[0];
-        if (getCurrentUser().id !== userID) users.push(getUser(userID));
-        // users.push(getUser(userID));
-      }
-    }
-
-    return users;
-  }
-
   pluginWillUnload () {
     uninject('dm-typing');
+    forceUpdateElement(`.${this.classes.tutorialContainer}`);
+
     powercord.api.settings.unregisterSettings('dm-typing-indicator')
-    clearInterval(this.interval)
   }
 };
