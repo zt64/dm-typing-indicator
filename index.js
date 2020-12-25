@@ -22,8 +22,6 @@ module.exports = class DMTypingIndicator extends Plugin {
       render: Settings
     });
 
-    this.ConnectedTypingIndicator = this.settings.connectStore(TypingIndicator);
-
     this.loadStylesheet('style.css');
     this.injectPlugin();
   }
@@ -31,9 +29,12 @@ module.exports = class DMTypingIndicator extends Plugin {
   injectPlugin() {
     const { DefaultHomeButton } = getModule([ 'DefaultHomeButton' ], false);
 
+    const ConnectedTypingIndicator = this.settings.connectStore(TypingIndicator);
+
     inject('dm-typing', DefaultHomeButton.prototype, 'render', (args, res) => {
-      res.props.children = [ res.props.children ];
-      res.props.children.push(React.createElement(this.ConnectedTypingIndicator));
+      if (!Array.isArray(res)) res = [ res ];
+
+      res.push(React.createElement(ConnectedTypingIndicator));
 
       return res;
     });
@@ -43,6 +44,6 @@ module.exports = class DMTypingIndicator extends Plugin {
     uninject('dm-typing');
     forceUpdateElement(`.${this.classes.tutorialContainer}`);
 
-    powercord.api.settings.unregisterSettings('dm-typing-indicator')
+    powercord.api.settings.unregisterSettings('dm-typing-indicator');
   }
 };
