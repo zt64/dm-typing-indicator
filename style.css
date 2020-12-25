@@ -1,4 +1,4 @@
-.typing-indicator {
+.dm-typing-indicator {
   font-size: 10px;
   font-weight: 500;
   line-height: 1.8;
@@ -8,7 +8,7 @@
   color: var(--text-muted);
 }
 
-.typing-indicator:hover {
+.dm-typing-indicator:hover {
   cursor: pointer;
   color: var(--interactive-hover);
 }

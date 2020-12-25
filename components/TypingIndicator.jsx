@@ -21,7 +21,7 @@ const fluxConnector = Flux.connectStoresAsync(
 
 class TypingIndicator extends React.Component {
   constructor () {
-    super ()
+    super();
 
     this.m = getModule([ 'openPrivateChannel' ], false);
 
@@ -51,7 +51,7 @@ class TypingIndicator extends React.Component {
 
     return (
       <div onClick={async () => users.length === 1 && await this.m.openPrivateChannel(users[0].id)}>
-        <Tooltip color='black' position='right' text={tooltip} className='typing-indicator'>
+        <Tooltip color='black' position='right' text={tooltip} className='dm-typing-indicator'>
           {this.setStyle(indicatorStyle, users)}
         </Tooltip>
       </div> 
