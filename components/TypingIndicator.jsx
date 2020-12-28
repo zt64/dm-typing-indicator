@@ -47,7 +47,7 @@ class TypingIndicator extends React.Component {
 
     const userNames = users.map(user => user.username);
     const tooltip = users.length === 1 ? `${userNames[0]} is typing...` : `${userNames.join(', ')} are typing...`
-    const indicatorStyle = this.props.getSetting('indicatorStyle', true);
+    const indicatorStyle = this.props.getSetting('indicatorStyle', 'icon');
 
     return (
       <div onClick={async () => users.length === 1 && await this.m.openPrivateChannel(users[0].id)}>
