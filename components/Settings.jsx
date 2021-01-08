@@ -21,7 +21,7 @@ module.exports = class Component extends React.Component {
         onChange={() => toggleSetting('ignoreBlocked', true)}
       >Ignore Blocked Users</SwitchItem>
       <SwitchItem
-        note="Don't show indicator for users who are you are not friends with."
+        note="Don't show indicator for users who you are not friends with."
         value={getSetting('ignoreNonFriend', true)}
         onChange={() => toggleSetting('ignoreNonFriend', true)}
       >Ignore Non-Friend Users</SwitchItem>
