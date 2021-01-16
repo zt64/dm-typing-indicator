@@ -35,16 +35,18 @@ class TypingIndicator extends React.PureComponent {
     const { typingUsers } = this.props;
 
     if (typingUsers.length > 0) {
-      const usernames = typingUsers.map(user => <strong>{user.username}</strong>);
+      const usernames = typingUsers.map(user => user.username);
       const strings = [];
 
       usernames.forEach(username => {
+        const boldUsername = <strong>{username}</strong>;
+
         if (usernames.indexOf(username) !== usernames.length - 1) {
-          strings.push(username);
+          strings.push(boldUsername);
           strings.push(', ');
         } else {
           strings.splice(-1, 1, ' and ');
-          strings.push(username);
+          strings.push(boldUsername);
           strings.push(' ');
         }
 
