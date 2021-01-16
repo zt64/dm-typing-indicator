@@ -8,13 +8,6 @@ module.exports = class Component extends React.Component {
   }
 
   render() {
-    const { default: Channel } = getModule([ 'isPrivate' ], false);
-    const fakeChannel = new Channel({ id: '1337' });
-    const FluxTypingUsers = getModuleByDisplayName('FluxContainer(TypingUsers)', false);
-    const TypingUsers = new FluxTypingUsers({ channel: fakeChannel }).render().type;
-
-    return <Card>
-      <div>Mink</div>
-    </Card>;
+    <Card>Preview</Card>;
   }
 }
