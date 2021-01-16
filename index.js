@@ -8,6 +8,7 @@ const dmTypingStore = require('./stores/dmTypingStore');
 
 const Settings = require('./components/Settings');
 const TypingIndicator = require('./components/TypingIndicator');
+const i18n = require('./i18n');
 
 module.exports = class DMTypingIndicator extends Plugin {
   constructor () {
@@ -30,6 +31,8 @@ module.exports = class DMTypingIndicator extends Plugin {
       render: Settings
     });
 
+    powercord.api.i18n.loadAllStrings(i18n);
+
     this.loadStylesheet('./style.css');
     this.injectTypingIndicator();
   }
@@ -42,6 +45,7 @@ module.exports = class DMTypingIndicator extends Plugin {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
+
       if (badgeContainer && dmTypingStore.getDMTypingUsers().length > 0) {
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
         badgeContainer.props.lowerBadgeWidth = 28;
