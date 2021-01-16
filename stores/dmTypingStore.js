@@ -9,6 +9,13 @@ const userStore = getModule([ 'getCurrentUser' ], false);
 
 const typingUsers = {};
 
+function handleSentMessage ({ channelId, message }) {
+  if (!!privateChannelStore.getPrivateChannels()[channelId]) {
+    const userId = message.author.id;
+    handleTypingStop({ channelId, userId})
+  }
+}
+
 function handleTypingStart ({ channelId, userId }) {
   const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
   const channelTypingUsers = Object.assign({}, typingUsers[channelId] || Object.freeze({}));
@@ -21,6 +28,8 @@ function handleTypingStart ({ channelId, userId }) {
     channelTypingUsers[userId] = userStore.getUser(userId);
     typingUsers[channelId] = channelTypingUsers;
   }
+
+  forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
 }
 
 function handleTypingStop ({ channelId, userId }) {
@@ -51,5 +60,6 @@ class PrivateChannelTypingStore extends Flux.Store {
 
 module.exports = new PrivateChannelTypingStore(FluxDispatcher, {
   TYPING_START: handleTypingStart,
-  TYPING_STOP: handleTypingStop
+  TYPING_STOP: handleTypingStop,
+  MESSAGE_CREATE: handleSentMessage
 });
