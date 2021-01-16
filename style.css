@@ -1,10 +1,6 @@
 .dm-typing-indicator {
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1.8;
   text-align: center;
   word-wrap: normal;
-  width: auto;
   color: var(--text-muted);
 }
 
