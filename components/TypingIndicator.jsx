@@ -75,8 +75,9 @@ class TypingIndicator extends React.PureComponent {
 
       if (this.props.badge) {
         const badgeStyle = { backgroundColor: this.getSetting('indicatorBgColor', '#43b581') };
+        const animateIndicator = this.getSetting('animateIndicator', true);
 
-        return <Spinner type='pulsingEllipsis' animated={true} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
+        return <Spinner type='pulsingEllipsis' animated={animateIndicator} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
       }
 
       return <div className={this.props.className} onClick={this.handleOnClick.bind(this, typingUsers)}>
