@@ -7,5 +7,6 @@
   "DMTI_PICKER_BGCOLOR": "Badge Background Color",
   "DTMI_SWITCH_IGNORE_BLOCKED": "Ignore Blocked Users",
   "DTMI_SWITCH_IGNORE_NON_FRIEND": "Ignore Non-Friend Users",
-  "DTMI_SWITCH_ANIMATE_INDICATOR": "Animate Indicator"
+  "DTMI_SWITCH_ANIMATE_INDICATOR": "Animate Indicator",
+  "DTMI_TYPING_USERS_COUNT": "{count, number} typing..."
 }

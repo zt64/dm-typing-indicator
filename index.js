@@ -5,6 +5,7 @@ const { inject, uninject } = require('powercord/injector');
 const { findInReactTree, forceUpdateElement } = require('powercord/util');
 
 const dmTypingStore = require('./stores/dmTypingStore');
+const typingStore = getModule([ 'getTypingUsers' ], false);
 
 const Settings = require('./components/Settings');
 const TypingIndicator = require('./components/TypingIndicator');
@@ -35,6 +36,8 @@ module.exports = class DMTypingIndicator extends Plugin {
 
     this.loadStylesheet('./style.css');
     this.injectTypingIndicator();
+
+    typingStore.addChangeListener(this._forceUpdateHomeButton);
   }
 
   injectTypingIndicator () {
@@ -57,10 +60,16 @@ module.exports = class DMTypingIndicator extends Plugin {
     });
   }
 
+  _forceUpdateHomeButton () {
+    forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
+  }
+
   pluginWillUnload () {
     uninject('dm-typing-indicator');
-    forceUpdateElement(`.${this.classes.tutorialContainer}`);
 
+    this._forceUpdateHomeButton();
+
+    typingStore.removeChangeListener(this._forceUpdateHomeButton);
     powercord.api.settings.unregisterSettings('dm-typing-indicator');
   }
 };

@@ -1,6 +1,5 @@
+/* eslint-disable object-property-newline */
 const { Flux, FluxDispatcher, getModule } = require('powercord/webpack');
-const { forceUpdateElement } = require('powercord/util');
-
 const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
 
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
@@ -8,13 +7,6 @@ const privateChannelStore = getModule([ 'getPrivateChannels' ], false);
 const userStore = getModule([ 'getCurrentUser' ], false);
 
 const typingUsers = {};
-
-function handleSentMessage ({ channelId, message }) {
-  if (!!privateChannelStore.getPrivateChannels()[channelId]) {
-    const userId = message.author.id;
-    handleTypingStop({ channelId, userId})
-  }
-}
 
 function handleTypingStart ({ channelId, userId }) {
   const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
@@ -28,8 +20,6 @@ function handleTypingStart ({ channelId, userId }) {
     channelTypingUsers[userId] = userStore.getUser(userId);
     typingUsers[channelId] = channelTypingUsers;
   }
-
-  forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
 }
 
 function handleTypingStop ({ channelId, userId }) {
@@ -44,8 +34,16 @@ function handleTypingStop ({ channelId, userId }) {
     } else {
       delete typingUsers[channelId];
     }
+  }
+}
 
-    forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
+function handleMessageSent ({ channelId, message }) {
+  const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
+
+  if (hasPrivateChannel) {
+    const userId = message.author.id;
+
+    handleTypingStop({ channelId, userId });
   }
 }
 
@@ -61,5 +59,5 @@ class PrivateChannelTypingStore extends Flux.Store {
 module.exports = new PrivateChannelTypingStore(FluxDispatcher, {
   TYPING_START: handleTypingStart,
   TYPING_STOP: handleTypingStop,
-  MESSAGE_CREATE: handleSentMessage
+  MESSAGE_CREATE: handleMessageSent
 });
