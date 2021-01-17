@@ -1,0 +1,12 @@
+{
+  "DMTI_STYLE_BADGE": "Badge: Show a badge on the home icon.",
+  "DTMI_STYLE_ICON": "Icon: Show just an icon below the home icon.",
+  "DMTI_STYLE_TEXT": "Text: Show just text.",
+  "DMTI_STYLE_BOTH": "Both: Show both an icon and text.",
+  "DMTI_STYLE_INPUT": "Indicator Style",
+  "DMTI_PICKER_BGCOLOR": "Badge Background Color",
+  "DTMI_SWITCH_IGNORE_BLOCKED": "Ignore Blocked Users",
+  "DTMI_SWITCH_IGNORE_NON_FRIEND": "Ignore Non-Friend Users",
+  "DTMI_SWITCH_ANIMATE_INDICATOR": "Animate Indicator",
+  "DTMI_TYPING_USERS_COUNT": "{count, number} typing..."
+}

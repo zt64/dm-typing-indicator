@@ -1,62 +1,96 @@
-const { React, Flux, getModule } = require('powercord/webpack');
+/* eslint-disable object-property-newline */
+const { React, Flux, getModule, i18n: { Messages } } = require('powercord/webpack');
 const { Tooltip, Spinner } = require('powercord/components');
 
-const fluxConnector = Flux.connectStoresAsync(
-  [
-    getModule([ 'getTypingUsers' ]),
-    getModule([ 'getCurrentUser' ]),
-    getModule([ 'getPrivateChannels' ]),
-    getModule([ 'isBlocked', 'isFriend' ])
-  ],
-  ([ typingStore, userStore, privateChannelsStore, blockedStore ], { getSetting }) => ({
-    users: Object.keys(privateChannelsStore.getPrivateChannels())
-      .map(channelID => Object.keys(typingStore.getTypingUsers(channelID)))
-      .flat()
-      .filter(id => id !== userStore.getCurrentUser().id)
-      .filter(id => getSetting('ignoreNonFriend', false) ? blockedStore.isFriend(id) : true)
-      .filter(id => getSetting('ignoreBlocked', true) ? !blockedStore.isBlocked(id) : true)
-      .map(id => userStore.getUser(id))
-  })
-);
+const dmTypingStore = require('../stores/dmTypingStore');
 
-class TypingIndicator extends React.Component {
-  constructor () {
-    super();
+class TypingIndicator extends React.PureComponent {
+  constructor (props) {
+    super(props);
 
-    this.m = getModule([ 'openPrivateChannel' ], false);
-
-    this.setStyle = (style, users) => {
-      switch (style) {
-        case "icon":
-          return <Spinner type='pulsingEllipsis' animated={true} style={{ marginLeft: 5, opacity: 0.7 }}/>
-        case "text":
-          return <h1>{`${users.length} typing...`}</h1>
-        case "both":
-          return <>
-            <Spinner type='pulsingEllipsis' animated={true} style={{ marginLeft: 5, opacity: 0.7 }}/>
-            <h1>{`${users.length} typing...`}</h1>
-          </>
-      }
-    }
+    this.getSetting = props.getSetting;
+    this.channelUtils = getModule([ 'openPrivateChannel' ], false);
   }
 
-  render() {
-    const { users } = this.props;
-    
-    if (!users.length) return null;
+  async handleOnClick (typingUsers) {
+    return typingUsers.length === 1 && this.channelUtils.openPrivateChannel(typingUsers[0].id);
+  }
 
-    const userNames = users.map(user => user.username);
-    const tooltip = users.length === 1 ? `${userNames[0]} is typing...` : `${userNames.join(', ')} are typing...`
-    const indicatorStyle = this.props.getSetting('indicatorStyle', 'icon');
+  formatUsernames () {
+    const strings = [];
+    const usernames = this.props.typingUsers.map(user => user.username);
 
-    return (
-      <div onClick={async () => users.length === 1 && await this.m.openPrivateChannel(users[0].id)}>
-        <Tooltip color='black' position='right' text={tooltip} className='dm-typing-indicator'>
-          {this.setStyle(indicatorStyle, users)}
+    if (usernames.length === 1) {
+      return Messages.ONE_USER_TYPING.format({ a: usernames[0] });
+    }
+
+    const threeUsersTyping = Messages.THREE_USERS_TYPING.format({ a: null, b: null, c: null });
+    const typingStrings = threeUsersTyping.filter(element => typeof element === 'string');
+    const translations = Object.fromEntries(typingStrings.map((str, index) => {
+      const keys = [ 'user', 'comma', 'and', 'typing' ];
+      const key = [ keys[strings.length > 3 ? index : index + 1] ];
+
+      return [ key, str ];
+    }));
+
+    usernames.forEach(username => {
+      const boldUsername = <strong>{username}</strong>;
+
+      if (usernames.indexOf(username) !== usernames.length - 1) {
+        strings.push(boldUsername);
+        strings.push(translations.comma);
+      } else {
+        strings.splice(-1, 1, translations.and);
+        strings.push(boldUsername);
+        strings.push(translations.typing);
+      }
+    });
+
+    return strings;
+  }
+
+  renderIndicator () {
+    const { typingUsers } = this.props;
+
+    const indicator = [];
+    const indicatorStyle = this.getSetting('indicatorStyle', 'icon');
+    const animateIndicator = this.getSetting('animateIndicator', true);
+
+    if (indicatorStyle === 'icon' || indicatorStyle === 'both') {
+      indicator.push(<Spinner type='pulsingEllipsis' animated={animateIndicator} style={{ opacity: 0.7, marginBottom: indicatorStyle === 'both' ? 5 : '' }} />);
+    }
+
+    if (indicatorStyle === 'text' || indicatorStyle === 'both') {
+      indicator.push(Messages.DTMI_TYPING_USERS_COUNT.format({ count: typingUsers.length }));
+    }
+
+    return indicator;
+  }
+
+  render () {
+    const { typingUsers } = this.props;
+
+    if (typingUsers.length > 0) {
+      const tooltipText = this.formatUsernames();
+
+      if (this.props.badge) {
+        const badgeStyle = { backgroundColor: this.getSetting('indicatorBgColor', '#43b581') };
+        const animateIndicator = this.getSetting('animateIndicator', true);
+
+        return <Spinner type='pulsingEllipsis' animated={animateIndicator} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
+      }
+
+      return <div className={this.props.className} onClick={this.handleOnClick.bind(this, typingUsers)}>
+        <Tooltip color='black' position='right' text={tooltipText} className={!this.props.badge ? 'dm-typing-indicator' : ''}>
+          {this.renderIndicator()}
         </Tooltip>
-      </div> 
-    )
+      </div>;
+    }
+
+    return null;
   }
 }
 
-module.exports = fluxConnector(TypingIndicator);
+module.exports = Flux.connectStoresAsync([ dmTypingStore ], ([ dmTypingStore ]) => ({
+  typingUsers: dmTypingStore.getDMTypingUsers()
+}))(TypingIndicator);
