@@ -1,5 +1,7 @@
 /* eslint-disable object-property-newline */
 const { Flux, FluxDispatcher, getModule } = require('powercord/webpack');
+const { forceUpdateElement } = require('powercord/util');
+
 const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
 
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
@@ -19,6 +21,8 @@ function handleTypingStart ({ channelId, userId }) {
   if (hasPrivateChannel && !isCurrentUser && isFriend && !isBlocked) {
     channelTypingUsers[userId] = userStore.getUser(userId);
     typingUsers[channelId] = channelTypingUsers;
+
+    forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
   }
 }
 
@@ -34,6 +38,8 @@ function handleTypingStop ({ channelId, userId }) {
     } else {
       delete typingUsers[channelId];
     }
+
+    forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
   }
 }
 
