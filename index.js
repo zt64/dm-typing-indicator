@@ -51,7 +51,7 @@ module.exports = class DMTypingIndicator extends Plugin {
         badgeContainer.props.lowerBadgeWidth = 28;
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
       } else {
-        res.push(React.createElement(ConnectedTypingIndicator, { className: this.classes.listItem }));
+        res.splice(1, 0, React.createElement(ConnectedTypingIndicator, { className: this.classes.listItem }));
       }
 
       return res;
