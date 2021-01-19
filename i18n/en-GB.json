@@ -1,3 +1,4 @@
 {
-  "DMTI_PICKER_BGCOLOR": "Badge Background Colour"
+  "DMTI_PICKER_BGCOLOR": "Badge Background Colour",
+  "DMTI_PICKER_BGCOLOR_NOTE": "The background colour of the badge indicator."
 }

@@ -1,6 +1,6 @@
 /* eslint-disable object-property-newline */
 const { React, getModule, i18n: { Messages } } = require('powercord/webpack');
-const { SwitchItem, RadioGroup, ColorPickerInput } = require('powercord/components/settings');
+const { SwitchItem, RadioGroup, ColorPickerInput, SliderInput } = require('powercord/components/settings');
 
 const colorUtils = getModule([ 'isValidHex' ], false);
 
@@ -22,23 +22,24 @@ module.exports = class Settings extends React.Component {
         value={getSetting('indicatorStyle', 'icon')}
         onChange={(e) => updateSetting('indicatorStyle', e.value)}
       >{Messages.DTMI_STYLE_INPUT}</RadioGroup>
-      <ColorPickerInput
+      {getSetting('indicatorStyle', 'icon') === 'badge' && <ColorPickerInput
+        note={Messages.DMTI_PICKER_BGCOLOR_NOTE}
         default={colorUtils.hex2int('#43b581')}
         value={colorUtils.hex2int(getSetting('indicatorBgColor', '#43b581'))}
         onChange={(value) => updateSetting('indicatorBgColor', colorUtils.int2hex(value))}
-      >{Messages.DMTI_PICKER_BGCOLOR}</ColorPickerInput>
+      >{Messages.DMTI_PICKER_BGCOLOR}</ColorPickerInput>}
       <SwitchItem
-        note={'Don\'t show indicator for users who are blocked.'}
+        note={Messages.DTMI_SWITCH_IGNORE_BLOCKED_NOTE}
         value={getSetting('ignoreBlocked', true)}
         onChange={() => toggleSetting('ignoreBlocked', true)}
       >{Messages.DTMI_SWITCH_IGNORE_BLOCKED}</SwitchItem>
       <SwitchItem
-        note={'Don\'t show indicator for users who you are not friends with.'}
+        note={Messages.DTMI_SWITCH_IGNORE_NON_FRIEND_NOTE}
         value={getSetting('ignoreNonFriend', true)}
         onChange={() => toggleSetting('ignoreNonFriend', true)}
       >{Messages.DTMI_SWITCH_IGNORE_NON_FRIEND}</SwitchItem>
       <SwitchItem
-        note={'Animate the indicator even if the Discord window isn\'t focused.'}
+        note={Messages.DTMI_SWITCH_ANIMATE_INDICATOR_NOTE}
         value={getSetting('animateIndicator', true)}
         onChange={() => toggleSetting('animateIndicator', true)}
       >{Messages.DTMI_SWITCH_ANIMATE_INDICATOR}</SwitchItem>
