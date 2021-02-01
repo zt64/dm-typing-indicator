@@ -46,12 +46,16 @@ module.exports = class DMTypingIndicator extends Plugin {
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
       const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
+      const typingUsers = dmTypingStore.getFlattenedDMTypingUsers();
 
-      if (badgeContainer && indicatorStyle === 'badge' && dmTypingStore.getDMTypingUsers().length > 0) {
+      if (badgeContainer && indicatorStyle === 'badge' && typingUsers.length > 0) {
         badgeContainer.props.lowerBadgeWidth = 28;
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
       } else {
-        res.splice(1, 0, React.createElement(ConnectedTypingIndicator, { className: this.classes.listItem }));
+        res.splice(1, 0, React.createElement(ConnectedTypingIndicator, {
+          className: this.classes.listItem,
+          clickable: typingUsers.length === 1
+        }));
       }
 
       return res;

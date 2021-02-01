@@ -9,7 +9,7 @@
   color: var(--text-muted);
 }
 
-.dm-typing-indicator:hover {
+.dm-typing-indicator.clickable:hover {
   cursor: pointer;
   color: var(--interactive-hover);
 }
