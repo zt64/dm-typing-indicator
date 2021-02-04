@@ -2,7 +2,7 @@
 const { React, getModule, i18n: { Messages }, constants: { Routes } } = require('powercord/webpack');
 const { Tooltip, Spinner } = require('powercord/components');
 
-class TypingIndicator extends React.PureComponent {
+module.exports = class TypingIndicator extends React.PureComponent {
   constructor (props) {
     super(props);
 
@@ -80,30 +80,24 @@ class TypingIndicator extends React.PureComponent {
   render () {
     const { clickable, typingUsers, typingUsersFlat } = this.props;
 
-    if (typingUsersFlat.length > 0) {
-      const tooltipText = this.formatUsernames();
+    if (typingUsersFlat.length === 0) return null;
 
-      if (this.props.badge) {
-        const badgeStyle = { backgroundColor: this.getSetting('indicatorBgColor', '#43b581') };
-        const animateIndicator = this.getSetting('animateIndicator', true);
+    if (this.props.badge) {
+      const badgeStyle = { backgroundColor: this.getSetting('indicatorBgColor', '#43b581') };
+      const animateIndicator = this.getSetting('animateIndicator', true);
 
-        return <Spinner type='pulsingEllipsis' animated={animateIndicator} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
-      }
-
-      return <div className={this.props.className} onClick={clickable && this.handleOpenPrivateChannel.bind(this, typingUsers, typingUsersFlat[0])}>
-        <Tooltip
-          color='black'
-          position='right'
-          text={tooltipText}
-          className={!this.props.badge ? [ 'dm-typing-indicator', clickable && 'clickable' ].filter(Boolean).join(' ') : ''}
-        >
-          {this.renderIndicator()}
-        </Tooltip>
-      </div>;
+      return <Spinner type='pulsingEllipsis' animated={animateIndicator} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
     }
 
-    return null;
+    return <div className={this.props.className} onClick={clickable && this.handleOpenPrivateChannel.bind(this, typingUsers, typingUsersFlat[0])}>
+      <Tooltip
+        color='black'
+        position='right'
+        text={this.formatUsernames()}
+        className={!this.props.badge ? [ 'dm-typing-indicator', clickable && 'clickable' ].filter(Boolean).join(' ') : ''}
+      >
+        {this.renderIndicator()}
+      </Tooltip>
+    </div>;
   }
 }
-
-module.exports = TypingIndicator;

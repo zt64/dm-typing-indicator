@@ -28,6 +28,20 @@ module.exports = class Settings extends React.Component {
         value={colorUtils.hex2int(getSetting('indicatorBgColor', '#43b581'))}
         onChange={(value) => updateSetting('indicatorBgColor', colorUtils.int2hex(value))}
       >{Messages.DMTI_PICKER_BGCOLOR}</ColorPickerInput>}
+      <SliderInput
+        note={Messages.DTMI_SLIDER_MAX_USERS_NOTE}
+        stickToMarkers
+        initialValue={getSetting('maxTypingUsers', 3)}
+        markers={[ 3, 4, 5, 6, 7, 8 ]}
+        onMarkerRender={marker => marker === 3 ? Messages.DEFAULT : Messages.NUM_USERS.format({ num: marker })}
+        defaultValue={getSetting('maxTypingUsers', 3)}
+        onValueChange={value => updateSetting('maxTypingUsers', value)}
+      >{Messages.DTMI_SLIDER_MAX_USERS}</SliderInput>
+      <SwitchItem
+        note={Messages.DTMI_SWITCH_HIDE_CHANNEL_NOTE}
+        value={getSetting('hideWhenViewed', true)}
+        onChange={() => toggleSetting('hideWhenViewed', true)}
+      >{Messages.DTMI_SWITCH_HIDE_CHANNEL}</SwitchItem>
       <SwitchItem
         note={Messages.DTMI_SWITCH_IGNORE_BLOCKED_NOTE}
         value={getSetting('ignoreBlocked', true)}

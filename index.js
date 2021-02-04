@@ -1,6 +1,6 @@
 /* eslint-disable curly, object-property-newline */
 const { Plugin } = require('powercord/entities');
-const { React, Flux, getModule } = require('powercord/webpack');
+const { React, Flux, getModule, channels } = require('powercord/webpack');
 const { inject, uninject } = require('powercord/injector');
 const { findInReactTree, forceUpdateElement } = require('powercord/util');
 
@@ -18,6 +18,7 @@ module.exports = class DMTypingIndicator extends Plugin {
       tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
       listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
     };
+    this.channelStore = getModule([ 'hasChannel' ], false);
   }
 
   get dmTypingStore () {
@@ -52,6 +53,8 @@ module.exports = class DMTypingIndicator extends Plugin {
       const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
       const typingUsers = dmTypingStore.getFlattenedDMTypingUsers();
 
+      if (this.settings.get('hideWhenViewed', true) && typingUsers.find(user => channels.getChannelId() === this.channelStore.getDMFromUserId(user.id))) return res;
+
       if (badgeContainer && indicatorStyle === 'badge' && typingUsers.length > 0) {
         badgeContainer.props.lowerBadgeWidth = 28;
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
@@ -67,7 +70,7 @@ module.exports = class DMTypingIndicator extends Plugin {
   }
 
   _forceUpdateHomeButton () {
-    forceUpdateElement(`.${getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer}`);
+    forceUpdateElement(this.classes.tutorialContainer);
   }
 
   pluginWillUnload () {
