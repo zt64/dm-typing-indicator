@@ -6,13 +6,13 @@ const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
 const { tutorialContainer } = getModule([ 'homeIcon', 'downloadProgress' ], false);
 
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
-const privateChannelStore = getModule([ 'getPrivateChannels' ], false);
+const { getPrivateChannelIds } = getModule([ 'getPrivateChannelIds' ], false);
 const userStore = getModule([ 'getCurrentUser' ], false);
 
 const typingUsers = {};
 
 function handleTypingStart ({ channelId, userId }) {
-  const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
+  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
   const channelTypingUsers = Object.assign({}, typingUsers[channelId] || Object.freeze({}));
 
   const isCurrentUser = userId === userStore.getCurrentUser().id;
@@ -28,7 +28,7 @@ function handleTypingStart ({ channelId, userId }) {
 }
 
 function handleTypingStop ({ channelId, userId }) {
-  const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
+  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
   const channelTypingUsers = Object.assign({}, typingUsers[channelId]);
 
   if (hasPrivateChannel && channelTypingUsers !== null && channelTypingUsers[userId]) {
@@ -45,7 +45,7 @@ function handleTypingStop ({ channelId, userId }) {
 }
 
 function handleMessageSent ({ channelId, message }) {
-  const hasPrivateChannel = !!privateChannelStore.getPrivateChannels()[channelId];
+  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
 
   if (hasPrivateChannel) {
     const userId = message.author.id;
@@ -56,9 +56,9 @@ function handleMessageSent ({ channelId, message }) {
 
 class PrivateChannelTypingStore extends Flux.Store {
   getFlattenedDMTypingUsers () {
-    const privateChannels = privateChannelStore.getPrivateChannels();
+    const privateChannels = getPrivateChannelIds();
 
-    return Object.keys(privateChannels).map(channelId => Object.values(typingUsers[channelId] || {})).flat();
+    return privateChannels.map(channelId => Object.values(typingUsers[channelId] || {})).flat();
   }
 
   getDMTypingUsers (channelId) {
