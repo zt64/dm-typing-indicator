@@ -1,6 +1,6 @@
 /* eslint-disable curly, object-property-newline */
 const { Plugin } = require('powercord/entities');
-const { React, getModule } = require('powercord/webpack');
+const { React, Flux, getModule } = require('powercord/webpack');
 const { inject, uninject } = require('powercord/injector');
 const { findInReactTree, forceUpdateElement } = require('powercord/util');
 
@@ -39,7 +39,11 @@ module.exports = class DMTypingIndicator extends Plugin {
 
   injectTypingIndicator () {
     const { DefaultHomeButton } = getModule([ 'DefaultHomeButton' ], false);
-    const ConnectedTypingIndicator = this.settings.connectStore(TypingIndicator);
+    const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], () => ({
+      typingUsers: dmTypingStore.getDMTypingUsers(),
+      typingUsersFlat: dmTypingStore.getFlattenedDMTypingUsers(),
+      ...powercord.api.settings._fluxProps('dm-typing-indicator')
+    }))(TypingIndicator);
 
     inject('dm-typing-indicator', DefaultHomeButton.prototype, 'render', (_, res) => {
       if (!Array.isArray(res)) res = [ res ];

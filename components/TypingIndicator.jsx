@@ -1,15 +1,13 @@
 /* eslint-disable new-cap, object-property-newline */
-const { React, Flux, getModule, i18n: { Messages }, constants: { Routes } } = require('powercord/webpack');
+const { React, getModule, i18n: { Messages }, constants: { Routes } } = require('powercord/webpack');
 const { Tooltip, Spinner } = require('powercord/components');
-
-const dmTypingStore = require('../stores/dmTypingStore');
 
 class TypingIndicator extends React.PureComponent {
   constructor (props) {
     super(props);
 
     this.getSetting = props.getSetting;
-    this.privateChannelStore = getModule([ 'getPrivateChannels' ], false);
+    this.channelStore = getModule([ 'hasChannel' ], false);
     this.channelUtils = getModule([ 'openPrivateChannel' ], false);
   }
 
@@ -17,7 +15,7 @@ class TypingIndicator extends React.PureComponent {
     const { transitionTo } = await getModule([ 'transitionTo' ]);
 
     const channelIds = Object.keys(typingUsers);
-    const privateGroupChannel = Object.values(this.privateChannelStore.getPrivateChannels()).find(channel => (
+    const privateGroupChannel = Object.values(this.channelStore.getMutablePrivateChannels()).find(channel => (
       channel.isGroupDM() && channel.id === channelIds[0]
     ));
 
@@ -108,7 +106,4 @@ class TypingIndicator extends React.PureComponent {
   }
 }
 
-module.exports = Flux.connectStoresAsync([ dmTypingStore ], ([ dmTypingStore ]) => ({
-  typingUsers: dmTypingStore.getDMTypingUsers(),
-  typingUsersFlat: dmTypingStore.getFlattenedDMTypingUsers()
-}))(TypingIndicator);
+module.exports = TypingIndicator;

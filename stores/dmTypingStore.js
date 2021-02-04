@@ -5,22 +5,23 @@ const { forceUpdateElement } = require('powercord/util');
 const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
 const { tutorialContainer } = getModule([ 'homeIcon', 'downloadProgress' ], false);
 
+const privateChannelStore = getModule([ 'getPrivateChannelIds' ], false);
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
-const { getPrivateChannelIds } = getModule([ 'getPrivateChannelIds' ], false);
+const channelStore = getModule([ 'hasChannel' ], false);
 const userStore = getModule([ 'getCurrentUser' ], false);
 
 const typingUsers = {};
 
 function handleTypingStart ({ channelId, userId }) {
-  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
+  const hasPrivateChannel = !!channelStore?.getMutablePrivateChannels()[channelId];
   const channelTypingUsers = Object.assign({}, typingUsers[channelId] || Object.freeze({}));
 
-  const isCurrentUser = userId === userStore.getCurrentUser().id;
-  const isFriend = getSetting('ignoreNonFriend', true) ? relationshipStore.isFriend(userId) : true;
-  const isBlocked = getSetting('ignoreBlocked', true) ? relationshipStore.isBlocked(userId) : false;
+  const isCurrentUser = userId === userStore?.getCurrentUser().id;
+  const isFriend = getSetting('ignoreNonFriend', true) ? relationshipStore?.isFriend(userId) : true;
+  const isBlocked = getSetting('ignoreBlocked', true) ? relationshipStore?.isBlocked(userId) : false;
 
   if (hasPrivateChannel && !isCurrentUser && isFriend && !isBlocked) {
-    channelTypingUsers[userId] = userStore.getUser(userId);
+    channelTypingUsers[userId] = userStore?.getUser(userId);
     typingUsers[channelId] = channelTypingUsers;
 
     forceUpdateElement(`.${tutorialContainer}`);
@@ -28,7 +29,7 @@ function handleTypingStart ({ channelId, userId }) {
 }
 
 function handleTypingStop ({ channelId, userId }) {
-  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
+  const hasPrivateChannel = !!channelStore?.getMutablePrivateChannels()[channelId];
   const channelTypingUsers = Object.assign({}, typingUsers[channelId]);
 
   if (hasPrivateChannel && channelTypingUsers !== null && channelTypingUsers[userId]) {
@@ -45,7 +46,7 @@ function handleTypingStop ({ channelId, userId }) {
 }
 
 function handleMessageSent ({ channelId, message }) {
-  const hasPrivateChannel = getPrivateChannelIds().some(element => element === channelId);
+  const hasPrivateChannel = !!channelStore?.getMutablePrivateChannels()[channelId];
 
   if (hasPrivateChannel) {
     const userId = message.author.id;
@@ -56,7 +57,7 @@ function handleMessageSent ({ channelId, message }) {
 
 class PrivateChannelTypingStore extends Flux.Store {
   getFlattenedDMTypingUsers () {
-    const privateChannels = getPrivateChannelIds();
+    const privateChannels = privateChannelStore?.getPrivateChannelIds();
 
     return privateChannels.map(channelId => Object.values(typingUsers[channelId] || {})).flat();
   }
