@@ -1,6 +1,6 @@
 /* eslint-disable curly, object-property-newline */
 const { Plugin } = require('powercord/entities');
-const { React, Flux, getModule, channels } = require('powercord/webpack');
+const { React, Flux, getModule } = require('powercord/webpack');
 const { inject, uninject } = require('powercord/injector');
 const { findInReactTree, forceUpdateElement } = require('powercord/util');
 
@@ -18,7 +18,6 @@ module.exports = class DMTypingIndicator extends Plugin {
       tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
       listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
     };
-    this.channelStore = getModule([ 'hasChannel' ], false);
   }
 
   get dmTypingStore () {
@@ -50,18 +49,26 @@ module.exports = class DMTypingIndicator extends Plugin {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
+      const typingUsersFlat = dmTypingStore.getFlattenedDMTypingUsers();
+      const typingUsers = dmTypingStore.getDMTypingUsers();
+
       const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
-      const typingUsers = dmTypingStore.getFlattenedDMTypingUsers();
+      const hideWhenViewed = this.settings.get('hideWhenViewed', true);
 
-      if (this.settings.get('hideWhenViewed', true) && typingUsers.find(user => channels.getChannelId() === this.channelStore.getDMFromUserId(user.id))) return res;
+      if (hideWhenViewed) {
+        const currentDMChannelId = window.location.href.match(/@me\/(\d+)/) && window.location.href.match(/@me\/(\d+)/)[1];
+        if (currentDMChannelId && typingUsersFlat.length === 1 && typingUsers[currentDMChannelId]) {
+          return res;
+        }
+      }
 
-      if (badgeContainer && indicatorStyle === 'badge' && typingUsers.length > 0) {
+      if (badgeContainer && indicatorStyle === 'badge' && typingUsersFlat.length > 0) {
         badgeContainer.props.lowerBadgeWidth = 28;
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
       } else {
         res.splice(1, 0, React.createElement(ConnectedTypingIndicator, {
           className: this.classes.listItem,
-          clickable: typingUsers.length === 1
+          clickable: typingUsersFlat.length === 1
         }));
       }
 

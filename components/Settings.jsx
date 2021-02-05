@@ -9,6 +9,7 @@ const colorUtils = getModule([ 'isValidHex' ], false);
 module.exports = class Settings extends React.Component {
   render () {
     const { getSetting, toggleSetting, updateSetting } = this.props;
+    const indicatorStyle = getSetting('indicatorStyle', 'icon');
 
     return <>
       {/* <Preview /> */}
@@ -19,16 +20,17 @@ module.exports = class Settings extends React.Component {
           { name: Messages.DMTI_STYLE_TEXT, value: 'text' },
           { name: Messages.DMTI_STYLE_BOTH, value: 'both' }
         ]}
-        value={getSetting('indicatorStyle', 'icon')}
+        value={indicatorStyle}
         onChange={(e) => updateSetting('indicatorStyle', e.value)}
       >{Messages.DTMI_STYLE_INPUT}</RadioGroup>
-      {getSetting('indicatorStyle', 'icon') === 'badge' && <ColorPickerInput
+      {indicatorStyle === 'badge' && <ColorPickerInput
         note={Messages.DMTI_PICKER_BGCOLOR_NOTE}
         default={colorUtils.hex2int('#43b581')}
         value={colorUtils.hex2int(getSetting('indicatorBgColor', '#43b581'))}
         onChange={(value) => updateSetting('indicatorBgColor', colorUtils.int2hex(value))}
       >{Messages.DMTI_PICKER_BGCOLOR}</ColorPickerInput>}
-      <SliderInput
+      {(indicatorStyle === 'text' || indicatorStyle === 'both') && <SliderInput
+        className='dmti-settings-slider'
         note={Messages.DTMI_SLIDER_MAX_USERS_NOTE}
         stickToMarkers
         initialValue={getSetting('maxTypingUsers', 3)}
@@ -36,7 +38,7 @@ module.exports = class Settings extends React.Component {
         onMarkerRender={marker => marker === 3 ? Messages.DEFAULT : Messages.NUM_USERS.format({ num: marker })}
         defaultValue={getSetting('maxTypingUsers', 3)}
         onValueChange={value => updateSetting('maxTypingUsers', value)}
-      >{Messages.DTMI_SLIDER_MAX_USERS}</SliderInput>
+      >{Messages.DTMI_SLIDER_MAX_USERS}</SliderInput>}
       <SwitchItem
         note={Messages.DTMI_SWITCH_HIDE_CHANNEL_NOTE}
         value={getSetting('hideWhenViewed', true)}

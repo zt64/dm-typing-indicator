@@ -43,18 +43,32 @@ module.exports = class TypingIndicator extends React.PureComponent {
       return [ key, str ];
     }));
 
-    usernames.forEach(username => {
-      const boldUsername = <strong>{username}</strong>;
+    translations.extra = (num) => {
+      const nowPlayingHeader = Messages.ACTIVITY_FEED_NOW_PLAYING_HEADER_TWO_KNOWN.format({ user1: null, user2: null, extras: num });
+      const strings = nowPlayingHeader.filter(element => typeof element === 'string');
+      return strings[strings.length - 1];
+    };
 
-      if (usernames.indexOf(username) !== usernames.length - 1) {
-        strings.push(boldUsername);
-        strings.push(translations.comma);
-      } else {
-        strings.splice(-1, 1, translations.and);
-        strings.push(boldUsername);
-        strings.push(translations.typing);
+    const maxTypingUsers = this.getSetting('maxTypingUsers', 3);
+
+    outerLoop:
+    for (let i = 0; i < usernames.length; i++) {
+      const additionalUsers = usernames.length - i;
+      switch (true) {
+        case i === maxTypingUsers:
+          strings.push(`${translations.extra(additionalUsers)}${translations.typing}`);
+          break outerLoop;
+        case i === usernames.length - 1:
+          strings.push(translations.and);
+          break;
+        case i !== 0:
+          strings.push(translations.comma);
       }
-    });
+
+      strings.push(<strong>{usernames[i]}</strong>);
+
+      if (i === usernames.length - 1) strings.push(translations.typing);
+    }
 
     return strings;
   }

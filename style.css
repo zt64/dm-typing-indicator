@@ -27,3 +27,12 @@
   width: 4.5px;
   height: 4.5px;
 }
+
+.dmti-settings-slider {
+  margin: 20px 12px 0;
+  width: calc(100% - 24px);
+}
+
+.dmti-settings-slider .markValue-2DwdXI {
+  white-space: nowrap;
+}
