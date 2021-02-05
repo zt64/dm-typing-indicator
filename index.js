@@ -57,7 +57,7 @@ module.exports = class DMTypingIndicator extends Plugin {
 
       if (hideWhenViewed) {
         const currentDMChannelId = window.location.href.match(/@me\/(\d+)/) && window.location.href.match(/@me\/(\d+)/)[1];
-        if (currentDMChannelId && typingUsersFlat.length === 1 && typingUsers[currentDMChannelId]) {
+        if (currentDMChannelId && Object.keys(typingUsers).length === 1 && typingUsers[currentDMChannelId]) {
           return res;
         }
       }
