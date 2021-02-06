@@ -1,9 +1,9 @@
-const { React, getModule } = require('powercord/webpack');
+const { React, Flux, getModule } = require('powercord/webpack');
 const { Card, AsyncComponent } = require('powercord/components');
 
 const DefaultHomeButton = AsyncComponent.from(getModule(['DefaultHomeButton']).then(m => m.DefaultHomeButton))
 
-module.exports = class Preview extends React.PureComponent {
+class Preview extends React.PureComponent {
   constructor (props) {
     super(props);
 
@@ -23,25 +23,39 @@ module.exports = class Preview extends React.PureComponent {
   }
 
   render() {
+    const [ typingUsersFlat, typingUsers ] = this.fetchPreviewUsers();
+
     return <Card className='dmti-preview'>
-      <DefaultHomeButton user={'previewUser'} typingUsersFlat={this.fetchPreviewUsersFlat()}/>
+      <DefaultHomeButton user={'previewUser'} typingUsersFlat={typingUsersFlat} typingUsers={typingUsers}/>
     </Card>
   }
 
-  fetchPreviewUsersFlat () {
+  fetchPreviewUsers () {
     const cachedUsers = Object.values(getModule([ 'getUsers' ], false).getUsers())//.filter(user => user.id !== this.props.main.currentUserId);
     const getRandomUserId = () => cachedUsers[Math.floor(Math.random() * cachedUsers.length)].id;
-    const users = [];
+    const typingUsers = { '1337': {} };
 
     const { currentRotation } = this.state;
 
     for (let i = 0; i < currentRotation + 1; i++) {
-      const id = this.previewUsers[i] || getRandomUserId();
+      const userId = this.previewUsers[i] || getRandomUserId();
 
-      users.push(getModule([ 'getCurrentUser' ], false).getUser(id));
+      if (!this.previewUsers[i]) {
+        this.previewUsers[i] = userId;
+      }
+
+      typingUsers['1337'][userId] = cachedUsers.find(user => user.id === userId);
     }
 
-    return users;
+    const maxTypingUsers = this.props.getSetting('maxTypingUsers', 3);
+    if (currentRotation === 3 && maxTypingUsers > 3) {
+      for (let i = currentRotation + 1; i < maxTypingUsers + 1; i++) {
+        const userId = getRandomUserId();
+        typingUsers['1337'][userId] = cachedUsers.find(user => user.id === userId);
+      }
+    }
+
+    return [ Object.values(typingUsers['1337']).flat(), typingUsers ];
   }
 
   startTypingRotation () {
@@ -67,3 +81,7 @@ module.exports = class Preview extends React.PureComponent {
     clearInterval(this.state.typingRotation);
   }
 }
+
+module.exports = Flux.connectStores([ powercord.api.settings.store ], () => ({
+  ...powercord.api.settings._fluxProps('dm-typing-indicator')
+}))(Preview);

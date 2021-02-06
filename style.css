@@ -35,9 +35,9 @@
   border-radius: 5px !important;
 }
 
-.dmti-preview .typing-2GQL18 {
-  margin: 0;
-  position: initial !important;
+.dmti-preview .dm-typing-badge {
+  padding: 8px;
+  width: 28px;
 }
 
 .dmti-settings-slider {

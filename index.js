@@ -39,21 +39,21 @@ module.exports = class DMTypingIndicator extends Plugin {
 
   injectTypingIndicator () {
     const { DefaultHomeButton } = getModule([ 'DefaultHomeButton' ], false);
-    const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], () => ({
-      typingUsers: dmTypingStore.getDMTypingUsers(),
-      typingUsersFlat: dmTypingStore.getFlattenedDMTypingUsers(),
-      ...powercord.api.settings._fluxProps('dm-typing-indicator')
-    }))(TypingIndicator);
     const _this = this;
 
     inject('dm-typing-indicator', DefaultHomeButton.prototype, 'render', function (_, res) {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
+
       const typingUsersFlat = this.props.typingUsersFlat || dmTypingStore.getFlattenedDMTypingUsers();
       const typingUsers = this.props.typingUsers || dmTypingStore.getDMTypingUsers();
 
-      console.log(typingUsers, typingUsersFlat);
+      const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], () => ({
+        typingUsers,
+        typingUsersFlat,
+        ...powercord.api.settings._fluxProps('dm-typing-indicator')
+      }))(TypingIndicator);
 
       const indicatorStyle = _this.settings.get('indicatorStyle', 'icon');
       const hideWhenViewed = _this.settings.get('hideWhenViewed', true);
