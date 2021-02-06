@@ -1,6 +1,7 @@
 /* eslint-disable object-property-newline */
 const { React, getModule, i18n: { Messages } } = require('powercord/webpack');
 const { SwitchItem, RadioGroup, ColorPickerInput, SliderInput } = require('powercord/components/settings');
+const { FormTitle } = require('powercord/components');
 
 const colorUtils = getModule([ 'isValidHex' ], false);
 
@@ -12,7 +13,10 @@ module.exports = class Settings extends React.Component {
     const indicatorStyle = getSetting('indicatorStyle', 'icon');
 
     return <>
+      <FormTitle>{Messages.FORM_LABEL_VIDEO_PREVIEW}</FormTitle>
       <Preview/>
+
+      <FormTitle tag='h2' className='dmti-settings-title'>{Messages.SETTINGS}</FormTitle>
       <RadioGroup
         options={[
           { name: Messages.DMTI_STYLE_BADGE, value: 'badge' },

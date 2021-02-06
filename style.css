@@ -32,12 +32,16 @@
   padding: 8px;
   background-color: var(--background-secondary);
   margin-bottom: 40px;
-  border-radius: 5px !important;
+  width: 90px;
 }
 
 .dmti-preview .dm-typing-badge {
   padding: 8px;
   width: 28px;
+}
+
+.dmti-settings-title {
+  margin-bottom: 15px;
 }
 
 .dmti-settings-slider {
