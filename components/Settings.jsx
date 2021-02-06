@@ -4,7 +4,7 @@ const { SwitchItem, RadioGroup, ColorPickerInput, SliderInput } = require('power
 
 const colorUtils = getModule([ 'isValidHex' ], false);
 
-// const Preview = require('./Preview');
+const Preview = require('./Preview');
 
 module.exports = class Settings extends React.Component {
   render () {
@@ -12,7 +12,7 @@ module.exports = class Settings extends React.Component {
     const indicatorStyle = getSetting('indicatorStyle', 'icon');
 
     return <>
-      {/* <Preview /> */}
+      <Preview/>
       <RadioGroup
         options={[
           { name: Messages.DMTI_STYLE_BADGE, value: 'badge' },
@@ -40,10 +40,10 @@ module.exports = class Settings extends React.Component {
         onValueChange={value => updateSetting('maxTypingUsers', value)}
       >{Messages.DTMI_SLIDER_MAX_USERS}</SliderInput>}
       <SwitchItem
-        note={Messages.DTMI_SWITCH_HIDE_CHANNEL_NOTE}
+        note={Messages.DTMI_SWITCH_HIDE_WHEN_VIEWED_NOTE}
         value={getSetting('hideWhenViewed', true)}
         onChange={() => toggleSetting('hideWhenViewed', true)}
-      >{Messages.DTMI_SWITCH_HIDE_CHANNEL}</SwitchItem>
+      >{Messages.DTMI_SWITCH_HIDE_WHEN_VIEWED}</SwitchItem>
       <SwitchItem
         note={Messages.DTMI_SWITCH_IGNORE_BLOCKED_NOTE}
         value={getSetting('ignoreBlocked', true)}

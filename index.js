@@ -44,16 +44,19 @@ module.exports = class DMTypingIndicator extends Plugin {
       typingUsersFlat: dmTypingStore.getFlattenedDMTypingUsers(),
       ...powercord.api.settings._fluxProps('dm-typing-indicator')
     }))(TypingIndicator);
+    const _this = this;
 
-    inject('dm-typing-indicator', DefaultHomeButton.prototype, 'render', (_, res) => {
+    inject('dm-typing-indicator', DefaultHomeButton.prototype, 'render', function (_, res) {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
-      const typingUsersFlat = dmTypingStore.getFlattenedDMTypingUsers();
-      const typingUsers = dmTypingStore.getDMTypingUsers();
+      const typingUsersFlat = this.props.typingUsersFlat || dmTypingStore.getFlattenedDMTypingUsers();
+      const typingUsers = this.props.typingUsers || dmTypingStore.getDMTypingUsers();
 
-      const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
-      const hideWhenViewed = this.settings.get('hideWhenViewed', true);
+      console.log(typingUsers, typingUsersFlat);
+
+      const indicatorStyle = _this.settings.get('indicatorStyle', 'icon');
+      const hideWhenViewed = _this.settings.get('hideWhenViewed', true);
 
       if (hideWhenViewed) {
         const currentDMChannelId = window.location.href.match(/@me\/(\d+)/) && window.location.href.match(/@me\/(\d+)/)[1];
@@ -67,7 +70,7 @@ module.exports = class DMTypingIndicator extends Plugin {
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
       } else {
         res.splice(1, 0, React.createElement(ConnectedTypingIndicator, {
-          className: this.classes.listItem,
+          className: _this.classes.listItem,
           clickable: typingUsersFlat.length === 1
         }));
       }

@@ -28,6 +28,18 @@
   height: 4.5px;
 }
 
+.dmti-preview {
+  padding: 8px;
+  background-color: var(--background-secondary);
+  margin-bottom: 40px;
+  border-radius: 5px !important;
+}
+
+.dmti-preview .typing-2GQL18 {
+  margin: 0;
+  position: initial !important;
+}
+
 .dmti-settings-slider {
   margin: 20px 12px 0;
   width: calc(100% - 24px);
