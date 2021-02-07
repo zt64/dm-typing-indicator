@@ -2,7 +2,7 @@
 To install this plugin go to your plugins directory and clone it with the command below.
 
 ```bash
-git clone https://github.com/Litleck/DM-Typing-Indicator.git
+git clone https://github.com/Litleck/dm-typing-indicator.git
 ```
 
 ## Contributing

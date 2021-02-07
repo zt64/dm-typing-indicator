@@ -26,7 +26,7 @@ module.exports = class DMTypingIndicator extends Plugin {
 
   async startPlugin () {
     powercord.api.settings.registerSettings('dm-typing-indicator', {
-      category: this.entityID,
+      category: 'dm-typing-indicator',
       label: 'DM Typing Indicator',
       render: Settings
     });
