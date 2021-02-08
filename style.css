@@ -29,10 +29,8 @@
 }
 
 .dmti-preview {
+  float: right;
   padding: 8px;
-  background-color: var(--background-secondary);
-  margin-bottom: 40px;
-  width: 90px;
 }
 
 .dmti-preview .dm-typing-badge {

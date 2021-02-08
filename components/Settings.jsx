@@ -13,10 +13,14 @@ module.exports = class Settings extends React.Component {
     const indicatorStyle = getSetting('indicatorStyle', 'icon');
 
     return <>
-      <FormTitle>{Messages.FORM_LABEL_VIDEO_PREVIEW}</FormTitle>
-      <Preview/>
-
       <FormTitle tag='h2' className='dmti-settings-title'>{Messages.SETTINGS}</FormTitle>
+
+      <div className="dmti-preview">
+        <FormTitle>{Messages.FORM_LABEL_VIDEO_PREVIEW}</FormTitle>
+        <Preview/>
+      </div>
+
+
       <RadioGroup
         options={[
           { name: Messages.DMTI_STYLE_BADGE, value: 'badge' },
@@ -26,7 +30,7 @@ module.exports = class Settings extends React.Component {
         ]}
         value={indicatorStyle}
         onChange={(e) => updateSetting('indicatorStyle', e.value)}
-      >{Messages.DTMI_STYLE_INPUT}</RadioGroup>
+      >{Messages.DMTI_STYLE_INPUT}</RadioGroup>
       {indicatorStyle === 'badge' && <ColorPickerInput
         note={Messages.DMTI_PICKER_BGCOLOR_NOTE}
         default={colorUtils.hex2int('#43b581')}
