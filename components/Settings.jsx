@@ -15,11 +15,10 @@ module.exports = class Settings extends React.Component {
     return <>
       <FormTitle tag='h2' className='dmti-settings-title'>{Messages.SETTINGS}</FormTitle>
 
-      <div className="dmti-preview">
+      <div className='dmti-preview-container'>
         <FormTitle>{Messages.FORM_LABEL_VIDEO_PREVIEW}</FormTitle>
         <Preview/>
       </div>
-
 
       <RadioGroup
         options={[

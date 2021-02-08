@@ -28,6 +28,12 @@
   height: 4.5px;
 }
 
+.dmti-preview-container {
+  float: right;
+  margin-left: 8px;
+  width: 90px;
+}
+
 .dmti-preview {
   float: right;
   padding: 8px;
