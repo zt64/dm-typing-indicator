@@ -1,7 +1,7 @@
 const { React, Flux, getModule } = require('powercord/webpack');
 const { Card, AsyncComponent } = require('powercord/components');
 
-const DefaultHomeButton = AsyncComponent.from(getModule(['DefaultHomeButton']).then(m => m.DefaultHomeButton))
+const DefaultHomeButton = AsyncComponent.from(getModule([ 'DefaultHomeButton' ]).then(m => m.DefaultHomeButton));
 
 class Preview extends React.PureComponent {
   constructor (props) {
@@ -22,18 +22,18 @@ class Preview extends React.PureComponent {
     this.stopTypingRotation();
   }
 
-  render() {
+  render () {
     const [ typingUsersFlat, typingUsers ] = this.fetchPreviewUsers();
 
     return <Card className='dmti-preview'>
       <DefaultHomeButton user={'previewUser'} typingUsersFlat={typingUsersFlat} typingUsers={typingUsers}/>
-    </Card>
+    </Card>;
   }
 
   fetchPreviewUsers () {
-    const cachedUsers = Object.values(getModule([ 'getUsers' ], false).getUsers())//.filter(user => user.id !== this.props.main.currentUserId);
+    const cachedUsers = Object.values(getModule([ 'getUsers' ], false).getUsers());// .filter(user => user.id !== this.props.main.currentUserId);
     const getRandomUserId = () => cachedUsers[Math.floor(Math.random() * cachedUsers.length)].id;
-    const typingUsers = { '1337': {} };
+    const typingUsers = { 1337: {} };
 
     const { currentRotation } = this.state;
 

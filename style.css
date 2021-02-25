@@ -28,11 +28,15 @@
   height: 4.5px;
 }
 
-.dmti-preview {
-  padding: 8px;
-  background-color: var(--background-secondary);
-  margin-bottom: 40px;
+.dmti-preview-container {
+  float: right;
+  margin-left: 8px;
   width: 90px;
+}
+
+.dmti-preview {
+  float: right;
+  padding: 8px;
 }
 
 .dmti-preview .dm-typing-badge {
