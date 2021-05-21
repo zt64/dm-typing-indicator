@@ -37,17 +37,16 @@ module.exports = class DMTypingIndicator extends Plugin {
     this.injectTypingIndicator();
   }
 
-  injectTypingIndicator () {
-    const { DefaultHomeButton } = getModule([ 'DefaultHomeButton' ], false);
-    const _this = this;
+  async injectTypingIndicator () {
+    const HomeButtonsModule = await getModule([ 'DefaultHomeButton' ]);
 
-    inject('dm-typing-indicator', DefaultHomeButton.prototype, 'render', function (_, res) {
+    inject('dm-typing-indicator', HomeButtonsModule, 'DefaultHomeButton', ([ props ], res) => {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
 
-      const typingUsersFlat = this.props.typingUsersFlat || dmTypingStore.getFlattenedDMTypingUsers();
-      const typingUsers = this.props.typingUsers || dmTypingStore.getDMTypingUsers();
+      const typingUsersFlat = props.typingUsersFlat || dmTypingStore.getFlattenedDMTypingUsers();
+      const typingUsers = props.typingUsers || dmTypingStore.getDMTypingUsers();
 
       const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], () => ({
         typingUsers,
@@ -55,8 +54,8 @@ module.exports = class DMTypingIndicator extends Plugin {
         ...powercord.api.settings._fluxProps('dm-typing-indicator')
       }))(TypingIndicator);
 
-      const indicatorStyle = _this.settings.get('indicatorStyle', 'icon');
-      const hideWhenViewed = _this.settings.get('hideWhenViewed', true);
+      const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
+      const hideWhenViewed = this.settings.get('hideWhenViewed', true);
 
       if (hideWhenViewed) {
         const currentDMChannelId = window.location.href.match(/@me\/(\d+)/) && window.location.href.match(/@me\/(\d+)/)[1];
@@ -70,7 +69,7 @@ module.exports = class DMTypingIndicator extends Plugin {
         badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
       } else {
         res.splice(1, 0, React.createElement(ConnectedTypingIndicator, {
-          className: _this.classes.listItem,
+          className: this.classes.listItem,
           clickable: typingUsersFlat.length === 1
         }));
       }
