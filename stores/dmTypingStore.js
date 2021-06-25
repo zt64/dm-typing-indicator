@@ -3,7 +3,8 @@ const { Flux, FluxDispatcher, getModule } = require('powercord/webpack');
 const { forceUpdateElement } = require('powercord/util');
 
 const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
-const { tutorialContainer } = getModule([ 'homeIcon', 'downloadProgress' ], false);
+// use an || {}, otherwise plugin will fail to construct and you won't be able to update it
+const { tutorialContainer } = getModule([ 'homeIcon', 'downloadProgress' ], false) || (console.error('tutorialContainer not found in DM-Typing-Indicator!'), { tutorialContainer: 'CLASSNOTFOUND' });
 
 const privateChannelStore = getModule([ 'getPrivateChannelIds' ], false);
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);

@@ -14,10 +14,15 @@ module.exports = class DMTypingIndicator extends Plugin {
   constructor () {
     super();
 
+    // must try catch, if you don't, then if this ever errors out, you won't
+    try {
     this.classes = {
       tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
       listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
     };
+    } catch (err) {
+      this.error('Failed to fetch classes', err);
+    }
   }
 
   get dmTypingStore () {
