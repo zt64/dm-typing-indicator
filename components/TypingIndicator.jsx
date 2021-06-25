@@ -2,27 +2,32 @@
 const { React, getModule, i18n: { Messages }, constants: { Routes } } = require('powercord/webpack');
 const { Tooltip, Spinner } = require('powercord/components');
 
+const ChannelStore = getModule([ 'hasChannel' ], false);
+const ChannelUtils = getModule([ 'openPrivateChannel' ], false);
+const Router = getModule([ 'transitionTo' ], false);
+
 module.exports = class TypingIndicator extends React.PureComponent {
   constructor (props) {
     super(props);
 
     this.getSetting = props.getSetting;
-    this.channelStore = getModule([ 'hasChannel' ], false);
-    this.channelUtils = getModule([ 'openPrivateChannel' ], false);
-    this.transitionTo = getModule([ 'transitionTo'], false).transitionTo;
+     // bind has to happen here, if you do bind in render, then it will just
+     // rerender every single time needlessly
+    this.handleOpenPrivateChannel = this.handleOpenPrivateChannel.bind(this);
   }
 
-  async handleOpenPrivateChannel (typingUsers, user) {
+  handleOpenPrivateChannel () {
+    const { typingUsers, typingUsersFlat: [ user ] } = this.props;
     const channelIds = Object.keys(typingUsers);
-    const privateGroupChannel = Object.values(this.channelStore.getMutablePrivateChannels()).find(channel => (
+    const privateGroupChannel = Object.values(ChannelStore.getMutablePrivateChannels()).find(channel => (
       channel.isGroupDM() && channel.id === channelIds[0]
     ));
 
     if (privateGroupChannel) {
-      return this.transitionTo(Routes.CHANNEL('@me', privateGroupChannel.id));
+      return Router.transitionTo(Routes.CHANNEL('@me', privateGroupChannel.id));
     }
 
-    return this.channelUtils.openPrivateChannel(user.id);
+    return ChannelUtils.openPrivateChannel(user.id);
   }
 
   formatUsernames () {
@@ -91,7 +96,7 @@ module.exports = class TypingIndicator extends React.PureComponent {
   }
 
   render () {
-    const { clickable, typingUsers, typingUsersFlat } = this.props;
+    const { clickable, typingUsersFlat } = this.props;
 
     if (typingUsersFlat.length === 0) return null;
 
@@ -102,7 +107,7 @@ module.exports = class TypingIndicator extends React.PureComponent {
       return <Spinner type='pulsingEllipsis' animated={animateIndicator} className='dm-typing-badge' itemClassName='dm-typing-badge-spinner' style={badgeStyle} />;
     }
 
-    return <div className={this.props.className} onClick={clickable && this.handleOpenPrivateChannel.bind(this, typingUsers, typingUsersFlat[0])}>
+    return <div className={this.props.className} onClick={clickable && this.handleOpenPrivateChannel}>
       <Tooltip
         color='black'
         position='right'
