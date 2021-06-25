@@ -16,10 +16,10 @@ module.exports = class DMTypingIndicator extends Plugin {
 
     // must try catch, if you don't, then if this ever errors out, you won't
     try {
-    this.classes = {
-      tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
-      listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
-    };
+      this.classes = {
+        tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
+        listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
+      };
     } catch (err) {
       this.error('Failed to fetch classes', err);
     }
@@ -45,6 +45,16 @@ module.exports = class DMTypingIndicator extends Plugin {
   async injectTypingIndicator () {
     const HomeButtonsModule = await getModule([ 'DefaultHomeButton' ]);
 
+    // why outside? well, if you do it inside the patch, then it will create a new element each time
+    // and if a new element is made each time, it will needlessly rerender each time
+    // not is a rerender slow, but it actually reconstructs the entire TypingIndicator class
+    // every single time, big nono, especially if you use webpack search in the constructor of TypingIndicator
+    const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], ({ typingUsersFlat, typingUsers }) => ({
+      typingUsers,
+      typingUsersFlat,
+      ...powercord.api.settings._fluxProps('dm-typing-indicator')
+    }))(TypingIndicator);
+
     inject('dm-typing-indicator', HomeButtonsModule, 'DefaultHomeButton', ([ props ], res) => {
       if (!Array.isArray(res)) res = [ res ];
 
@@ -52,12 +62,6 @@ module.exports = class DMTypingIndicator extends Plugin {
 
       const typingUsersFlat = props.typingUsersFlat || dmTypingStore.getFlattenedDMTypingUsers();
       const typingUsers = props.typingUsers || dmTypingStore.getDMTypingUsers();
-
-      const ConnectedTypingIndicator = Flux.connectStores([ powercord.api.settings.store, dmTypingStore ], () => ({
-        typingUsers,
-        typingUsersFlat,
-        ...powercord.api.settings._fluxProps('dm-typing-indicator')
-      }))(TypingIndicator);
 
       const indicatorStyle = this.settings.get('indicatorStyle', 'icon');
       const hideWhenViewed = this.settings.get('hideWhenViewed', true);
@@ -71,11 +75,13 @@ module.exports = class DMTypingIndicator extends Plugin {
 
       if (badgeContainer && indicatorStyle === 'badge' && typingUsersFlat.length > 0) {
         badgeContainer.props.lowerBadgeWidth = 28;
-        badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true });
+        badgeContainer.props.lowerBadge = React.createElement(ConnectedTypingIndicator, { badge: true, typingUsersFlat, typingUsers });
       } else {
         res.splice(1, 0, React.createElement(ConnectedTypingIndicator, {
           className: this.classes.listItem,
-          clickable: typingUsersFlat.length === 1
+          clickable: typingUsersFlat.length === 1,
+          typingUsersFlat,
+          typingUsers
         }));
       }
 
