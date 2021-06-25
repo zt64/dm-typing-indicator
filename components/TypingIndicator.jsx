@@ -9,18 +9,17 @@ module.exports = class TypingIndicator extends React.PureComponent {
     this.getSetting = props.getSetting;
     this.channelStore = getModule([ 'hasChannel' ], false);
     this.channelUtils = getModule([ 'openPrivateChannel' ], false);
+    this.transitionTo = getModule([ 'transitionTo'], false).transitionTo;
   }
 
   async handleOpenPrivateChannel (typingUsers, user) {
-    const { transitionTo } = await getModule([ 'transitionTo' ]);
-
     const channelIds = Object.keys(typingUsers);
     const privateGroupChannel = Object.values(this.channelStore.getMutablePrivateChannels()).find(channel => (
       channel.isGroupDM() && channel.id === channelIds[0]
     ));
 
     if (privateGroupChannel) {
-      return transitionTo(Routes.CHANNEL('@me', privateGroupChannel.id));
+      return this.transitionTo(Routes.CHANNEL('@me', privateGroupChannel.id));
     }
 
     return this.channelUtils.openPrivateChannel(user.id);

@@ -13,7 +13,7 @@
   "DTMI_SWITCH_IGNORE_NON_FRIEND": "Ignore Non-Friend Users",
   "DTMI_SWITCH_IGNORE_NON_FRIEND_NOTE": "Don't show indicator for users who you are not friends with.",
   "DTMI_SWITCH_ANIMATE_INDICATOR": "Animate Indicator",
-  "DTMI_SWITCH_ANIMATE_INDICATOR_NOTE": "Animate the indicator even if the Discord window isnt focused.",
+  "DTMI_SWITCH_ANIMATE_INDICATOR_NOTE": "Animate the indicator.",
   "DTMI_TYPING_USERS_COUNT": "{count, number} typing...",
   "DTMI_SLIDER_MAX_USERS": "Tooltip Max Users",
   "DTMI_SLIDER_MAX_USERS_NOTE": "The maximum amount of users to display on the tooltip."

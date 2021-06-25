@@ -1,8 +1,6 @@
 const { React, Flux, getModule } = require('powercord/webpack');
 const { Card, AsyncComponent } = require('powercord/components');
 
-const DefaultHomeButton = AsyncComponent.from(getModule([ 'DefaultHomeButton' ]).then(m => m.DefaultHomeButton));
-
 class Preview extends React.PureComponent {
   constructor (props) {
     super(props);
@@ -12,6 +10,9 @@ class Preview extends React.PureComponent {
       typingRotation: null,
       currentRotation: 0
     };
+
+    this.DefaultHomeButton = AsyncComponent.from(getModule([ 'DefaultHomeButton' ]).then(m => m.DefaultHomeButton));
+    this.getUsers = getModule([ 'getUsers' ], false).getUsers;
   }
 
   componentWillMount () {
@@ -26,12 +27,12 @@ class Preview extends React.PureComponent {
     const [ typingUsersFlat, typingUsers ] = this.fetchPreviewUsers();
 
     return <Card className='dmti-preview'>
-      <DefaultHomeButton user={'previewUser'} typingUsersFlat={typingUsersFlat} typingUsers={typingUsers}/>
+      <this.DefaultHomeButton user={'previewUser'} typingUsersFlat={typingUsersFlat} typingUsers={typingUsers}/>
     </Card>;
   }
 
   fetchPreviewUsers () {
-    const cachedUsers = Object.values(getModule([ 'getUsers' ], false).getUsers());// .filter(user => user.id !== this.props.main.currentUserId);
+    const cachedUsers = Object.values(this.getUsers());// .filter(user => user.id !== this.props.main.currentUserId);
     const getRandomUserId = () => cachedUsers[Math.floor(Math.random() * cachedUsers.length)].id;
     const typingUsers = { 1337: {} };
 
