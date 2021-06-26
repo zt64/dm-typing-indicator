@@ -6,6 +6,7 @@
   text-transform: uppercase;
   word-wrap: normal;
   width: 62px;
+  min-height: 10px;
   color: var(--text-muted);
 }
 
