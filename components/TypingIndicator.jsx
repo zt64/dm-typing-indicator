@@ -85,7 +85,11 @@ module.exports = class TypingIndicator extends React.PureComponent {
     const animateIndicator = this.getSetting('animateIndicator', true);
 
     if (indicatorStyle === 'icon' || indicatorStyle === 'both') {
-      indicator.push(<Spinner type='pulsingEllipsis' animated={animateIndicator} style={{ opacity: 0.7, marginBottom: indicatorStyle === 'both' ? 5 : '' }} />);
+      indicator.push(<Spinner type='pulsingEllipsis' animated={animateIndicator} style={{
+        opacity: 0.7,
+        marginBottom: indicatorStyle === 'both' ? 5 : '',
+        height: '10px'
+      }} />);
     }
 
     if (indicatorStyle === 'text' || indicatorStyle === 'both') {
