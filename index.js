@@ -43,7 +43,12 @@ module.exports = class DMTypingIndicator extends Plugin {
   }
 
   async injectTypingIndicator () {
-    const HomeButtonsModule = await getModule([ 'DefaultHomeButton' ]);
+    const getDefaultMethodByKeyword = (mdl, keyword) => {
+      const defaultMethod = mdl.__powercordOriginal_default ?? mdl.default;
+      return typeof defaultMethod === 'function' ? defaultMethod.toString().includes(keyword) : null;
+    };
+
+    const HomeButtonsModule = await getModule(m => getDefaultMethodByKeyword(m, 'showDMsOnly'));
 
     // why outside? well, if you do it inside the patch, then it will create a new element each time
     // and if a new element is made each time, it will needlessly rerender each time
@@ -55,7 +60,7 @@ module.exports = class DMTypingIndicator extends Plugin {
       ...powercord.api.settings._fluxProps('dm-typing-indicator')
     }))(TypingIndicator);
 
-    inject('dm-typing-indicator', HomeButtonsModule, 'DefaultHomeButton', ([ props ], res) => {
+    inject('dm-typing-indicator', HomeButtonsModule, 'default', ([ props ], res) => {
       if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
