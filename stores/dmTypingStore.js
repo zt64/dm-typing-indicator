@@ -9,7 +9,7 @@ const { tutorialContainer } = getModule([ 'homeIcon', 'downloadProgress' ], fals
 const privateChannelStore = getModule([ 'getPrivateChannelIds' ], false);
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
 const channelStore = getModule([ 'hasChannel' ], false);
-const userStore = getModule([ 'getCurrentUser' ], false);
+const userStore = getModule([ 'getCurrentUser', 'getUser' ], false);
 
 const typingUsers = {};
 
