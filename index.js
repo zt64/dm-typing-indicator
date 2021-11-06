@@ -1,8 +1,8 @@
 /* eslint-disable curly, object-property-newline */
-const { Plugin } = require('powercord/entities');
-const { React, Flux, getModule } = require('powercord/webpack');
-const { inject, uninject } = require('powercord/injector');
+const { React, Flux, FluxDispatcher, getModule } = require('powercord/webpack');
 const { findInReactTree, forceUpdateElement } = require('powercord/util');
+const { inject, uninject } = require('powercord/injector');
+const { Plugin } = require('powercord/entities');
 
 const dmTypingStore = require('./stores/dmTypingStore');
 
@@ -17,7 +17,6 @@ module.exports = class DMTypingIndicator extends Plugin {
     // must try catch, if you don't, then if this ever errors out, you won't
     try {
       this.classes = {
-        tutorialContainer: getModule([ 'homeIcon', 'downloadProgress' ], false).tutorialContainer,
         listItem: getModule([ 'guildSeparator', 'listItem' ], false).listItem
       };
     } catch (err) {
@@ -42,13 +41,18 @@ module.exports = class DMTypingIndicator extends Plugin {
     this.injectTypingIndicator();
   }
 
-  async injectTypingIndicator () {
-    const getDefaultMethodByKeyword = (mdl, keyword) => {
-      const defaultMethod = mdl.__powercordOriginal_default ?? mdl.default;
-      return typeof defaultMethod === 'function' ? defaultMethod.toString().includes(keyword) : null;
+  async injectTypingIndicator() {
+    const getMethodByKeyword = (mdl, keyword) => {
+      const functions = typeof mdl == 'object' && Object.values(mdl).filter((a) => typeof a == 'function');
+
+      for (const f of functions ? functions : []) {
+        if (f.toString?.()?.includes(keyword)) return mdl;
+      }
+
+      return null;
     };
 
-    const HomeButtonsModule = await getModule(m => getDefaultMethodByKeyword(m, 'showDMsOnly'));
+    const HomeButtonsModule = await getModule(m => getMethodByKeyword(m, 'showDMsOnly'));
 
     // why outside? well, if you do it inside the patch, then it will create a new element each time
     // and if a new element is made each time, it will needlessly rerender each time
@@ -60,8 +64,18 @@ module.exports = class DMTypingIndicator extends Plugin {
       ...powercord.api.settings._fluxProps('dm-typing-indicator')
     }))(TypingIndicator);
 
-    inject('dm-typing-indicator', HomeButtonsModule, 'default', ([ props ], res) => {
-      if (!Array.isArray(res)) res = [ res ];
+    inject('dm-typing-indicator', HomeButtonsModule, 'HomeButton', ([props], res) => {
+      const forceUpdate = React.useState({})[1];
+
+      React.useEffect(() => {
+        const callback = () => forceUpdate({});
+
+        FluxDispatcher.subscribe('DTI_REFRESH_HOME', callback);
+
+        return () => FluxDispatcher.unsubscribe('DTI_REFRESH_HOME', callback);
+      }, []);
+
+      if (!Array.isArray(res)) res = [res];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
 
@@ -95,7 +109,7 @@ module.exports = class DMTypingIndicator extends Plugin {
   }
 
   _forceUpdateHomeButton () {
-    forceUpdateElement(this.classes.tutorialContainer);
+    FluxDispatcher.dirtyDispatch({ type: 'DTI_REFRESH_HOME' });
   }
 
   pluginWillUnload () {
