@@ -1,7 +1,7 @@
 /* eslint-disable curly, object-property-newline */
 const { React, Flux, FluxDispatcher, getModule } = require('powercord/webpack');
-const { findInReactTree, forceUpdateElement } = require('powercord/util');
 const { inject, uninject } = require('powercord/injector');
+const { findInReactTree } = require('powercord/util');
 const { Plugin } = require('powercord/entities');
 
 const dmTypingStore = require('./stores/dmTypingStore');
@@ -41,18 +41,8 @@ module.exports = class DMTypingIndicator extends Plugin {
     this.injectTypingIndicator();
   }
 
-  async injectTypingIndicator() {
-    const getMethodByKeyword = (mdl, keyword) => {
-      const functions = typeof mdl == 'object' && Object.values(mdl).filter((a) => typeof a == 'function');
-
-      for (const f of functions ? functions : []) {
-        if (f.toString?.()?.includes(keyword)) return mdl;
-      }
-
-      return null;
-    };
-
-    const HomeButtonsModule = await getModule(m => getMethodByKeyword(m, 'showDMsOnly'));
+  async injectTypingIndicator () {
+    const HomeButtonModule = await getModule([ 'HomeButton' ]);
 
     // why outside? well, if you do it inside the patch, then it will create a new element each time
     // and if a new element is made each time, it will needlessly rerender each time
@@ -64,18 +54,18 @@ module.exports = class DMTypingIndicator extends Plugin {
       ...powercord.api.settings._fluxProps('dm-typing-indicator')
     }))(TypingIndicator);
 
-    inject('dm-typing-indicator', HomeButtonsModule, 'HomeButton', ([props], res) => {
+    inject('dm-typing-indicator', HomeButtonModule, 'HomeButton', ([ props ], res) => {
       const forceUpdate = React.useState({})[1];
 
       React.useEffect(() => {
         const callback = () => forceUpdate({});
 
-        FluxDispatcher.subscribe('DTI_REFRESH_HOME', callback);
+        FluxDispatcher.subscribe('DMTI_REFRESH_HOME', callback);
 
-        return () => FluxDispatcher.unsubscribe('DTI_REFRESH_HOME', callback);
+        return () => FluxDispatcher.unsubscribe('DMTI_REFRESH_HOME', callback);
       }, []);
 
-      if (!Array.isArray(res)) res = [res];
+      if (!Array.isArray(res)) res = [ res ];
 
       const badgeContainer = findInReactTree(res, n => n.type?.displayName === 'BlobMask');
 
@@ -109,7 +99,7 @@ module.exports = class DMTypingIndicator extends Plugin {
   }
 
   _forceUpdateHomeButton () {
-    FluxDispatcher.dirtyDispatch({ type: 'DTI_REFRESH_HOME' });
+    FluxDispatcher.dirtyDispatch({ type: 'DMTI_REFRESH_HOME' });
   }
 
   pluginWillUnload () {

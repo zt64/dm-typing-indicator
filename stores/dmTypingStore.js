@@ -2,7 +2,6 @@
 const { Flux, FluxDispatcher, getModule } = require('powercord/webpack');
 
 const { getSetting } = powercord.api.settings._fluxProps('dm-typing-indicator');
-// use an || {}, otherwise plugin will fail to construct and you won't be able to update it
 
 const privateChannelStore = getModule([ 'getPrivateChannelIds' ], false);
 const relationshipStore = getModule([ 'isBlocked', 'isFriend' ], false);
@@ -23,7 +22,7 @@ function handleTypingStart ({ channelId, userId }) {
     channelTypingUsers[userId] = userStore?.getUser(userId);
     typingUsers[channelId] = channelTypingUsers;
 
-    FluxDispatcher.dirtyDispatch({ type: 'DTI_REFRESH_HOME' });
+    FluxDispatcher.dirtyDispatch({ type: 'DMTI_REFRESH_HOME' });
   }
 }
 
@@ -40,7 +39,7 @@ function handleTypingStop ({ channelId, userId }) {
       delete typingUsers[channelId];
     }
 
-    FluxDispatcher.dirtyDispatch({ type: 'DTI_REFRESH_HOME' });
+    FluxDispatcher.dirtyDispatch({ type: 'DMTI_REFRESH_HOME' });
   }
 }
 
