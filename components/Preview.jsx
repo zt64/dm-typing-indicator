@@ -1,10 +1,5 @@
 const { React, Flux, getModule } = require('powercord/webpack');
 const { Card, AsyncComponent } = require('powercord/components');
-const getDefaultMethodByKeyword = (mdl, keyword) => {
-  const defaultMethod = mdl.__powercordOriginal_default ?? mdl.default;
-  return typeof defaultMethod === 'function' ? defaultMethod.toString().includes(keyword) : null;
-};
-
 
 class Preview extends React.PureComponent {
   constructor (props) {
@@ -16,7 +11,7 @@ class Preview extends React.PureComponent {
       currentRotation: 0
     };
 
-    this.DefaultHomeButton = getModule(m => getDefaultMethodByKeyword(m, 'showDMsOnly'), false).default;
+    this.DefaultHomeButton = getModule([ 'HomeButton' ], false).HomeButton;
     this.getUsers = getModule([ 'getUsers' ], false).getUsers;
   }
 
